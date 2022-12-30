@@ -3,7 +3,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
-import java.util.Date;
+import java.util.HashMap;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
@@ -11,33 +11,20 @@ import javax.swing.JPanel;
 public class Board extends JPanel {
 	private static int blockSize = 40;
 	private int boardWidth = 18;
-   private int boardHeight = 14;
-   private int width = boardWidth*blockSize + blockSize;
-   private int height = boardHeight*blockSize+2*blockSize + blockSize/2;
-   private Color background1 = new Color(119, 179, 209);
+	private int boardHeight = 14;
+	private int width = boardWidth*blockSize + blockSize;
+	private Color background1 = new Color(119, 179, 209);
 	private Color background2 = new Color(119, 170, 209);
 	private Color revealed1 = new Color(229, 194, 159);
 	private Color revealed2 = new Color(215, 184, 153);
 	private Color bar = new Color(91, 141, 160);
-	private Color temp = new Color(255, 81, 72);
 	private Color highlight = new Color(176, 213, 238);
 	
 	private int mouseMoveX;
 	private int mouseMoveY;
 	
-	private ImageIcon one;
-	private ImageIcon two;
-	private ImageIcon three;
-	private ImageIcon four;
-	private ImageIcon five;
-	private ImageIcon six;
-	private ImageIcon seven;
-	private ImageIcon eight;
-	private ImageIcon flag;
-	private ImageIcon iconFlag;
-	private ImageIcon clock;
-	private ImageIcon mine;
-	private ImageIcon trophy;
+	private HashMap<String, ImageIcon> imageIcons;
+	private HashMap<Integer, String> iconKey;
 	
 	Game minesweeper;
 	
@@ -50,6 +37,18 @@ public class Board extends JPanel {
 		minesweeper = m;
 		Move motion = new Move();
 		this.addMouseMotionListener(motion);
+		String path = "customImages/";
+		String[] paths = new String[] {"one", "two", "three", "four", "five", "six", "seven", "eight", "mine", "flag", "clock", "star", "trophy"};
+		imageIcons = new HashMap<>();
+
+		for(int index=0; index<paths.length; index++){
+			imageIcons.put(paths[index], new ImageIcon(path+paths[index] + ".png"));
+		}
+
+		iconKey = new HashMap<>();
+		for(int index=0; index<9; index++){
+			iconKey.put(index+1, paths[index]);
+		}
 	}
 	
 	public void paintComponent(Graphics g) {
@@ -67,8 +66,7 @@ public class Board extends JPanel {
 						g.setColor(highlight);
 					}
 					g.fillRect(xPos, yPos, blockSize, blockSize);
-					flag = new ImageIcon("flag.png");
-					flag.paintIcon(this, g, xPos, yPos);
+					imageIcons.get("flag").paintIcon(this, g, xPos, yPos);
 				}
 				else if(!currentCell.isRevealed()) {
 					g.setColor(backgroundColor);
@@ -80,42 +78,16 @@ public class Board extends JPanel {
 				if(currentCell.isRevealed()) {
 					g.setColor(backgroundColor);
 					g.fillRect(xPos, yPos, blockSize, blockSize);
-					if(currentCell.getNumber() == 1) {
-						one = new ImageIcon("one.png");
-						one.paintIcon(this, g, xPos, yPos);
-					}
-					else if(currentCell.getNumber() == 2) {
-						two = new ImageIcon("two.png");
-						two.paintIcon(this, g, xPos, yPos);
-					}
-					else if(currentCell.getNumber() == 3) {
-						three = new ImageIcon("three.png");
-						three.paintIcon(this, g, xPos, yPos);
-					}
-					else if(currentCell.getNumber() == 4) {
-						four = new ImageIcon("four.png");
-						four.paintIcon(this, g, xPos, yPos);
-					}
-					else if(currentCell.getNumber() == 5) {
-						five = new ImageIcon("five.png");
-						five.paintIcon(this, g, xPos, yPos);
-					}
-					else if(currentCell.getNumber() == 6) {
-						six = new ImageIcon("six.png");
-						six.paintIcon(this, g, xPos, yPos);
-					}
-					else if(currentCell.getNumber() == 7) {
-						seven = new ImageIcon("seven.png");
-						seven.paintIcon(this, g, xPos, yPos);
-					}
-					else if(currentCell.getNumber() == 8) {
-						eight = new ImageIcon("two.png");
-						eight.paintIcon(this, g, xPos, yPos);
+					if(currentCell.getNumber() != 0) {
+						int number = currentCell.getNumber();
+						String key = iconKey.get(number);
+						ImageIcon icon = imageIcons.get(key);
+						icon.paintIcon(this, g, xPos, yPos);
 					}
 					else if(currentCell.getMine()) {
-						mine = new ImageIcon("mine.png");
+						ImageIcon mine = imageIcons.get("mine");
 						if(minesweeper.getWin()) {
-							mine = new ImageIcon("star.png");
+							mine = imageIcons.get("star");
 						}
 						mine.paintIcon(this,  g,  xPos, yPos);
 					}
@@ -127,23 +99,20 @@ public class Board extends JPanel {
 		g.fillRect(0, 0, width, 2*blockSize);
 		
 		//flag count
-		iconFlag = new ImageIcon("flag.png");
-		iconFlag.paintIcon(this, g, blockSize, blockSize/2);
+		imageIcons.get("flag").paintIcon(this, g, blockSize, blockSize/2);
 		g.setColor(Color.white);
 		g.setFont(new Font("Helvetica", Font.BOLD, 36));
 		g.drawString(Integer.toString(minesweeper.getFlagCount()), 2*blockSize + blockSize/8, 3*blockSize/8 + blockSize);
 		
 		//time count
-		clock = new ImageIcon("clock.png");
-		clock.paintIcon(this, g, blockSize*8 + blockSize/2, blockSize/2);
+		imageIcons.get("clock").paintIcon(this, g, blockSize*8 + blockSize/2, blockSize/2);
 		if(!minesweeper.getFinished()) {
 			sec = minesweeper.getTime();
 		}
 		g.drawString(Integer.toString(sec), 9*blockSize + 3*blockSize/4, 3*blockSize/8 + blockSize);
 		
 		//best time
-		trophy = new ImageIcon("trophy.png");
-		trophy.paintIcon(this, g, blockSize*15, blockSize/2 + 1);
+		imageIcons.get("trophy").paintIcon(this, g, blockSize*15, blockSize/2 + 1);
 		try {
 			bestTime = minesweeper.getBestTime();
 		} catch (Exception e) {
