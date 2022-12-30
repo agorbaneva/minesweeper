@@ -2,7 +2,7 @@
 
 A working version of Minesweeper with custom graphics. You can read the rules of Minesweeper [here](https://minesweepergame.com/strategy/how-to-play-minesweeper.php).
 
-Clone the repository and run 'Driver.py' to launch Minesweeper.
+Clone the repository and run `Driver.py` to launch Minesweeper.
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/74417274/210095632-3d3fd634-f111-4529-be4f-23cfb9a44c86.png" width=50% height=50% class="center">
