@@ -1,12 +1,14 @@
-public class Driver implements Runnable{
-    Game minesweeper = new Game();
-    public static void main(String[] args){
-        new Thread(new Driver()).start();
-    }
+public class Driver implements Runnable {
 
-    public void run(){
-        while(true){
-            minesweeper.repaint();
-        }
+  Game minesweeper = new Game();
+
+  public static void main(String[] args) {
+    new Thread(new Driver()).start();
+  }
+
+  public void run() {
+    while (true) {
+      minesweeper.repaint();
     }
+  }
 }
